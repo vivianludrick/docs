@@ -1,0 +1,246 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------- shadcn/ui design tokens ---------- */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    @apply bg-primary/15;
+  }
+}
+
+/* ---------- Markdown prose (hand-rolled, token based) ---------- */
+.prose {
+  @apply text-[15.5px] leading-7 text-foreground;
+}
+.prose > :first-child {
+  @apply mt-0;
+}
+.prose h1 {
+  @apply mt-2 mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight;
+}
+.prose h2 {
+  @apply mt-12 mb-4 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight;
+}
+.prose h3 {
+  @apply mt-8 mb-3 scroll-m-20 text-xl font-semibold tracking-tight;
+}
+.prose h4 {
+  @apply mt-6 mb-2 scroll-m-20 text-lg font-semibold tracking-tight;
+}
+.prose p {
+  @apply my-4;
+}
+.prose a:not(.heading-anchor) {
+  @apply font-medium text-primary underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-primary;
+}
+.prose .heading-anchor {
+  @apply no-underline text-inherit;
+}
+.prose .heading-anchor:hover::after {
+  content: " #";
+  @apply text-muted-foreground;
+}
+.prose ul {
+  @apply my-4 ml-6 list-disc [&>li]:mt-2;
+}
+.prose ol {
+  @apply my-4 ml-6 list-decimal [&>li]:mt-2;
+}
+.prose li > ul,
+.prose li > ol {
+  @apply my-1;
+}
+.prose blockquote {
+  @apply my-6 border-l-2 pl-6 italic text-muted-foreground;
+}
+.prose hr {
+  @apply my-8;
+}
+.prose img {
+  @apply my-6 rounded-lg border;
+}
+.prose table {
+  @apply my-6 w-full overflow-hidden rounded-lg border text-sm;
+}
+.prose thead {
+  @apply bg-muted;
+}
+.prose th {
+  @apply border px-4 py-2 text-left font-semibold;
+}
+.prose td {
+  @apply border px-4 py-2;
+}
+.prose tr:nth-child(even) {
+  @apply bg-muted/40;
+}
+.prose kbd {
+  @apply rounded border bg-muted px-1.5 py-0.5 font-mono text-xs;
+}
+.prose :not(pre) > code {
+  @apply rounded bg-muted px-[0.35rem] py-[0.2rem] font-mono text-[0.85em] font-medium;
+}
+.prose pre {
+  @apply my-6 overflow-x-auto rounded-lg border bg-card p-4 text-sm leading-6;
+}
+.prose pre code {
+  @apply bg-transparent p-0 font-mono text-[13px];
+}
+
+/* Shiki dual theme */
+html:not(.dark) .astro-code,
+html:not(.dark) .astro-code span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+}
+.dark .astro-code,
+.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+.prose pre.astro-code {
+  background-color: var(--card) !important;
+}
+
+/* Code block wrapper + copy button (injected at runtime) */
+.code-block {
+  @apply relative;
+}
+.code-block .copy-btn {
+  @apply absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md border bg-background/80 text-muted-foreground opacity-0 backdrop-blur transition hover:bg-accent hover:text-foreground;
+}
+.code-block:hover .copy-btn {
+  @apply opacity-100;
+}
+
+/* Steps (step counter) — usable from plain markdown via a wrapper div */
+.steps {
+  @apply relative my-6 ml-4 border-l pl-8;
+  counter-reset: step;
+}
+.steps > h3,
+.steps > .step {
+  @apply relative mt-8 first:mt-0;
+  counter-increment: step;
+}
+.steps > h3::before,
+.steps > .step::before {
+  content: counter(step);
+  @apply absolute -left-[calc(2rem+1px+1rem)] top-0 flex h-8 w-8 items-center justify-center rounded-full border bg-background font-mono text-sm font-medium text-foreground;
+  margin-top: -0.25rem;
+}
+.steps > h3 {
+  @apply mb-0 border-0 pb-0;
+}
+
+/* Sidebar scrollbars */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}

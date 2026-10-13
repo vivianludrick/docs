@@ -1,0 +1,52 @@
+---
+title: Interactive components
+description: Svelte islands you can drop into any .mdx file.
+order: 2
+tags: [svelte, mdx]
+---
+
+import Steps from "@components/Steps.svelte";
+import Step from "@components/Step.svelte";
+import Callout from "@components/Callout.svelte";
+import Counter from "@components/Counter.svelte";
+
+Files ending in `.mdx` can import any Svelte component from `src/components`
+using the `@components/*` alias, then use it like HTML.
+
+```mdx
+import Callout from "@components/Callout.svelte";
+
+<Callout client:load type="tip">
+  Hello
+</Callout>
+```
+
+## Steps with progress
+
+<Steps client:load>
+  <Step client:load title="Create a branch">
+    `git switch -c my-learning`
+  </Step>
+  <Step client:load title="Write something down">
+    Even half a page is fine. Future you will thank you.
+  </Step>
+  <Step client:load title="Push">
+    The workflow builds and deploys automatically.
+  </Step>
+</Steps>
+
+## Callouts
+
+<Callout client:load type="tip" title="Tip">
+  Use `type="note" | "tip" | "warning" | "danger"`.
+</Callout>
+
+<Callout client:load type="warning">
+  Drafts are visible in `pnpm dev` but hidden from the deployed site.
+</Callout>
+
+## Counter
+
+A trivial island, just to prove hydration works inside markdown:
+
+<Counter client:load start={3} />

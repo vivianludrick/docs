@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/utils";
+---
+<BaseLayout title="Not found">
+  <main class="flex flex-1 flex-col items-center justify-center py-24 text-center">
+    <p class="font-mono text-6xl font-bold">404</p>
+    <p class="mt-2 text-muted-foreground">That page doesn't exist.</p>
+    <a href={withBase("/")} class="mt-6 rounded-md border px-4 py-2 text-sm hover:bg-accent">Go home</a>
+  </main>
+</BaseLayout>

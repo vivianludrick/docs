@@ -1,0 +1,76 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import TableOfContents from "../components/TableOfContents.svelte";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import type { Crumb } from "../lib/nav";
+import { getFlatNav } from "../lib/nav";
+import { withBase } from "../lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-svelte";
+
+interface Props {
+  title: string;
+  description?: string;
+  current: string;
+  headings: { depth: number; slug: string; text: string }[];
+  updated?: Date;
+  tags?: string[];
+  editPath?: string;
+  crumbs?: Crumb[];
+}
+const { title, description, current, headings, updated, tags = [], editPath, crumbs = [] } = Astro.props;
+
+const flat = await getFlatNav();
+const idx = flat.findIndex((l) => l.href === current);
+const prev = idx > 0 ? flat[idx - 1] : null;
+const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
+const repo = import.meta.env.PUBLIC_REPO_URL ?? "";
+---
+
+<BaseLayout {title} {description} {current}>
+  <main class="min-w-0 flex-1 py-8 lg:px-10">
+    <article class="prose mx-auto max-w-3xl">
+      <header class="mb-8">
+        <Breadcrumbs {crumbs} />
+        <h1 class="mb-2 text-4xl font-extrabold tracking-tight">{title}</h1>
+        {description && <p class="mt-0 text-lg text-muted-foreground">{description}</p>}
+        {(tags.length > 0 || updated) && (
+          <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {tags.map((t) => (
+              <span class="rounded-full border bg-muted px-2 py-0.5">{t}</span>
+            ))}
+            {updated && <span>Updated {updated.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" })}</span>}
+          </div>
+        )}
+      </header>
+
+      <slot />
+
+      {repo && editPath && (
+        <p class="mt-12 text-sm">
+          <a href={`${repo}/edit/main/${editPath}`} target="_blank" rel="noreferrer" class="text-muted-foreground hover:text-foreground">
+            Edit this page on GitHub ↗
+          </a>
+        </p>
+      )}
+
+      <nav class="mt-12 grid gap-4 border-t pt-6 sm:grid-cols-2" aria-label="Pagination">
+        {prev ? (
+          <a href={withBase(prev.href)} class="group flex flex-col rounded-lg border p-4 no-underline transition hover:bg-accent">
+            <span class="flex items-center gap-1 text-xs text-muted-foreground"><ChevronLeft class="h-3 w-3" /> Previous</span>
+            <span class="font-medium">{prev.title}</span>
+          </a>
+        ) : <span />}
+        {next && (
+          <a href={withBase(next.href)} class="group flex flex-col items-end rounded-lg border p-4 text-right no-underline transition hover:bg-accent">
+            <span class="flex items-center gap-1 text-xs text-muted-foreground">Next <ChevronRight class="h-3 w-3" /></span>
+            <span class="font-medium">{next.title}</span>
+          </a>
+        )}
+      </nav>
+    </article>
+  </main>
+
+  <aside class="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-56 shrink-0 overflow-y-auto py-8 pl-6 xl:block">
+    <TableOfContents client:load {headings} />
+  </aside>
+</BaseLayout>

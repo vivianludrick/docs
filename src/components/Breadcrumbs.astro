@@ -1,0 +1,30 @@
+---
+import { ChevronRight } from "lucide-svelte";
+import { withBase } from "../lib/utils";
+import type { Crumb } from "../lib/nav";
+
+interface Props {
+  crumbs: Crumb[];
+}
+const { crumbs } = Astro.props;
+---
+
+{crumbs.length > 1 && (
+  <nav aria-label="Breadcrumb" class="mb-4">
+    <ol class="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+      {crumbs.map((c, i) => {
+        const last = i === crumbs.length - 1;
+        return (
+          <li class="flex items-center gap-1">
+            {i > 0 && <ChevronRight class="h-3.5 w-3.5 opacity-60" />}
+            {c.href && !last ? (
+              <a href={withBase(c.href)} class="rounded px-1 py-0.5 transition hover:bg-accent hover:text-foreground">{c.title}</a>
+            ) : (
+              <span class:list={["px-1 py-0.5", last && "font-medium text-foreground"]} aria-current={last ? "page" : undefined}>{c.title}</span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  </nav>
+)}
