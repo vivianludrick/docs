@@ -33,14 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/setup@v1
         with:
-          run_install: false
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
+          version: 12.11.2
+          runtime: node@24
+          install: false
+          cache: true
 
       - run: pnpm install --frozen-lockfile
 
