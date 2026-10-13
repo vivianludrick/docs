@@ -21,8 +21,7 @@ vp lint && vp fmt
 
 ## Deploy
 
-Push to `main`. `.github/workflows/deploy.yml` builds and publishes to GitHub Pages.
-Enable it once under **Settings → Pages → Source: GitHub Actions**.
+Push to `main`. `.github/workflows/deploy.yml` configures and publishes to GitHub Pages.
 The workflow computes `SITE`/`BASE_PATH` from the repo name and passes `DOCS_DIR` to the build
 (override it from the manual "Run workflow" dialog).
 
