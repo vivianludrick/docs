@@ -119,3 +119,118 @@ export async function getBreadcrumbs(entry: DocEntry): Promise<Crumb[]> {
   else crumbs[crumbs.length - 1].href = null; // current page
   return crumbs;
 }
+
+/* ------------------------------------------------------------------ */
+/* Catalog: playlists, tags, cards for the Netflix-style dashboard     */
+/* ------------------------------------------------------------------ */
+import { bannerSvg, accentHue } from "./banner";
+
+export type PlaylistEntry = CollectionEntry<"playlists">;
+
+export interface Video {
+  id: string;
+  title?: string;
+  duration?: string;
+}
+
+/** Everything a card / hero needs, for either a doc or a playlist. */
+export interface CatalogItem {
+  kind: "doc" | "playlist";
+  id: string;
+  title: string;
+  description?: string;
+  href: string; // without base
+  banner: string; // url or data uri
+  hue: number;
+  tags: string[];
+  featured: boolean;
+  updated?: Date;
+  readingMinutes?: number; // docs only
+  docCount?: number; // playlists only
+  videos: Video[];
+}
+
+export function readingMinutes(body: string | undefined) {
+  const words = (body ?? "").split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
+export function resolveBanner(seed: string, banner?: string, hue?: number) {
+  if (!banner) return bannerSvg(seed, { hue });
+  if (/^(https?:)?\/\//.test(banner) || banner.startsWith("data:")) return banner;
+  // relative to public/
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  return `${base}/${banner.replace(/^\//, "")}`;
+}
+
+export function docToItem(d: DocEntry): CatalogItem {
+  const hue = accentHue(d.id, d.data.accent);
+  return {
+    kind: "doc",
+    id: d.id,
+    title: d.data.title,
+    description: d.data.description,
+    href: docHref(d),
+    banner: resolveBanner(d.data.title, d.data.banner, hue),
+    hue,
+    tags: d.data.tags,
+    featured: d.data.featured,
+    updated: d.data.updated,
+    readingMinutes: readingMinutes(d.body),
+    videos: d.data.videos,
+  };
+}
+
+export async function getPlaylists(): Promise<PlaylistEntry[]> {
+  const all = await getCollection("playlists");
+  return all.sort((a, b) => a.data.order - b.data.order);
+}
+
+/** Docs of a playlist, in order: explicit `docs:` list first, then any doc declaring `playlist: <id>`. */
+export async function getPlaylistDocs(p: PlaylistEntry): Promise<DocEntry[]> {
+  const docs = (await getDocs()).filter(isRenderable);
+  const byId = new Map(docs.map((d) => [d.id, d]));
+  const ordered: DocEntry[] = [];
+  for (const id of p.data.docs) {
+    const d = byId.get(id);
+    if (d && !ordered.includes(d)) ordered.push(d);
+  }
+  for (const d of docs) if (d.data.playlist === p.id && !ordered.includes(d)) ordered.push(d);
+  return ordered;
+}
+
+export async function playlistToItem(p: PlaylistEntry): Promise<CatalogItem> {
+  const hue = accentHue(p.id, p.data.accent);
+  const docs = await getPlaylistDocs(p);
+  return {
+    kind: "playlist",
+    id: p.id,
+    title: p.data.title,
+    description: p.data.description,
+    href: `/playlists/${p.id}`,
+    banner: resolveBanner(p.data.title, p.data.banner, hue),
+    hue,
+    tags: p.data.tags,
+    featured: p.data.featured,
+    updated: docs.map((d) => d.data.updated).filter(Boolean).sort((a, b) => b!.getTime() - a!.getTime())[0],
+    docCount: docs.length,
+    videos: p.data.videos,
+  };
+}
+
+export async function getCatalog() {
+  const [docs, playlists] = await Promise.all([getDocs(), getPlaylists()]);
+  const docItems = docs.filter(isRenderable).map(docToItem);
+  const playlistItems = await Promise.all(playlists.map(playlistToItem));
+  const tags = new Map<string, CatalogItem[]>();
+  for (const it of [...playlistItems, ...docItems]) {
+    for (const t of it.tags) tags.set(t, [...(tags.get(t) ?? []), it]);
+  }
+  return {
+    docs: docItems,
+    playlists: playlistItems,
+    tags: [...tags.entries()].sort((a, b) => b[1].length - a[1].length),
+    featured: [...playlistItems, ...docItems].filter((i) => i.featured),
+    recent: [...docItems].filter((d) => d.updated).sort((a, b) => b.updated!.getTime() - a.updated!.getTime()).slice(0, 12),
+  };
+}

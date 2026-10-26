@@ -2,7 +2,14 @@
 title: Svelte 5 runes
 description: The handful of runes I actually use.
 order: 1
-tags: [svelte]
+tags: [svelte, frontend]
+featured: true
+updated: 2026-10-20
+videos:
+  - id: RVnxF3j3N8U
+    title: Svelte 5 introduction
+  - id: Ndo-1dAd9bA
+    title: Runes deep dive
 ---
 
 ## `$state`

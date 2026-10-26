@@ -1,0 +1,14 @@
+title: Svelte 5 from zero
+description: Runes, snippets, and the mental model shift from Svelte 4. Watch the talks, then read the notes.
+accent: 14
+tags: [svelte, frontend]
+order: 1
+featured: true
+videos:
+  - id: RVnxF3j3N8U
+    title: "Rich Harris — Svelte 5 introduction"
+  - id: Ndo-1dAd9bA
+    title: "Runes explained"
+docs:
+  - notes/svelte-runes
+  - getting-started/components

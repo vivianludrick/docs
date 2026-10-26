@@ -1,0 +1,9 @@
+title: How this site works
+description: Writing, components, deploying. Everything about the docs site itself.
+accent: 210
+tags: [meta]
+order: 2
+docs:
+  - getting-started/writing-docs
+  - getting-started/components
+  - guides/deploying

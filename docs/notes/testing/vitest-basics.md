@@ -2,7 +2,9 @@
 title: Vitest basics
 description: A nested page, to show breadcrumbs and deeper folders.
 order: 1
-tags: [testing]
+tags: [testing, tooling]
+updated: 2026-10-24
+accent: 150
 ---
 
 ## Run
