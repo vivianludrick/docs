@@ -98,7 +98,7 @@ const docContextJson = JSON.stringify({ title, href: current, description, body 
       <div class="flex min-w-0 items-start justify-between gap-4">
         <Breadcrumbs {crumbs} />
         <div class="-mt-1 flex shrink-0 items-center gap-2">
-          <BookmarkButton client:load href={current} {title} />
+          <BookmarkButton client:idle href={current} {title} />
           {repo && editPath && (
             <a
               href={`${repo}/edit/${site.branch}/${editPath}`}
@@ -159,10 +159,10 @@ const docContextJson = JSON.stringify({ title, href: current, description, body 
       <article id="article" class="prose">
         <slot />
       </article>
-      <TocDrawer client:load {headings} {hue} />
+      <TocDrawer client:idle {headings} {hue} />
       {playlist && (
         <PlaylistDrawer
-          client:load
+          client:idle
           title={playlist.title}
           href={playlist.href}
           docs={playlist.docs}

@@ -32,7 +32,6 @@ const label = isPlaylist ? "Playlist" : "Article";
     className,
   )}
   style={`--glow: ${glow}; --tint: hsl(${item.hue} 55% 55% / 0.45); --tint-2: hsl(${item.hue} 55% 55% / 0.25)`}
-  aria-label={`${label}: ${item.title}`}
   data-kind={item.kind}
 >
   {isPlaylist && (

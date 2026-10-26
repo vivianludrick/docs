@@ -22,6 +22,6 @@ const meta = Object.fromEntries(
       <h1 class="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">Bookmarks</h1>
       <p class="mt-3 text-lg text-muted-foreground">Articles and playlists you've marked to come back to.</p>
     </header>
-    <Bookmarks client:load items={meta} base={import.meta.env.BASE_URL} layout="grid" />
+    <Bookmarks client:idle items={meta} base={import.meta.env.BASE_URL} layout="grid" />
   </main>
 </BaseLayout>

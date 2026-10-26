@@ -75,6 +75,7 @@
 <button
   type="button"
   onclick={show}
+  aria-label="Search docs"
   class="inline-flex h-9 w-9 items-center justify-center gap-2 rounded-md border bg-background text-sm text-muted-foreground transition hover:bg-accent md:w-64 md:justify-start md:px-3"
 >
   <SearchIcon class="h-4 w-4" />

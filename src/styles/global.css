@@ -97,8 +97,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
-  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+  --font-serif: var(--font-source-serif);
 }
 
 @layer base {
@@ -122,7 +123,7 @@
 
 /* Display serif for article titles (body font is user-switchable via html[data-font]). */
 @utility font-display {
-  font-family: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-family: var(--font-source-serif);
   font-optical-sizing: auto;
 }
 
@@ -144,7 +145,7 @@
 /* ---------- Markdown prose (hand-rolled, token based, book-like) ---------- */
 .prose {
   @apply text-foreground;
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-inter);
   font-size: 17px;
   line-height: 1.75;
   overflow-wrap: anywhere;
@@ -157,7 +158,7 @@
   }
 }
 html[data-font="serif"] .prose {
-  font-family: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-family: var(--font-source-serif);
   font-size: 18px;
   line-height: 1.7;
 }
@@ -173,7 +174,7 @@ html[data-font="serif"] .prose {
 .prose h4,
 .prose h5,
 .prose h6 {
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-inter);
   @apply scroll-mt-24 text-balance font-semibold tracking-tight text-foreground;
   letter-spacing: -0.02em;
 }
@@ -218,7 +219,7 @@ html[data-font="serif"] .prose {
 /* Drop cap on the opening paragraph (tablet and up only; skipped if it opens with code). */
 @media (min-width: 48rem) {
   .prose > p:first-child:not(:has(> code:first-child))::first-letter {
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-source-serif);
     font-weight: 600;
     font-size: 3.4em;
     line-height: 0.82;
@@ -284,7 +285,7 @@ html[data-font="serif"] .prose {
 /* Pull-quote style blockquote */
 .prose blockquote {
   @apply relative my-9 border-0 px-6 py-1 text-foreground/90 md:px-10;
-  font-family: "Source Serif 4", Georgia, serif;
+  font-family: var(--font-source-serif);
   font-size: 1.18em;
   line-height: 1.55;
   font-style: italic;
@@ -363,18 +364,18 @@ html[data-font="serif"] .prose {
 /* Keys & code */
 .prose kbd {
   @apply inline-block rounded-md border border-b-2 bg-muted px-1.5 py-0.5 align-middle font-mono text-[0.78em] font-medium leading-none text-foreground shadow-xs;
-  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-jetbrains);
 }
 .prose :not(pre) > code {
   @apply rounded-md border border-border/60 bg-muted/70 px-[0.35em] py-[0.12em] text-[0.86em] font-medium text-foreground;
-  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-jetbrains);
 }
 .prose a > code {
   @apply underline decoration-inherit;
 }
 .prose pre {
   @apply my-8 overflow-x-auto rounded-xl border bg-card px-5 py-4 text-[13.5px] leading-[1.7];
-  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-jetbrains);
   scrollbar-width: thin;
 }
 .prose pre code {

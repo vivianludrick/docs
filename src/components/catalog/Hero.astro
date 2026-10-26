@@ -39,7 +39,7 @@ const s = slides[0];
             {s.kind === "playlist" ? <ListVideo class="h-3.5 w-3.5" /> : <FileText class="h-3.5 w-3.5" />}
             {s.meta}
           </span>
-          <TagChips client:load tags={s.tags} />
+          <TagChips client:idle tags={s.tags} />
         </div>
         <h1 class="mt-4 text-5xl font-extrabold leading-[1.05] tracking-tight md:text-6xl">{s.title}</h1>
         {s.description && <p class="mt-4 max-w-xl text-base text-muted-foreground md:text-lg">{s.description}</p>}
@@ -50,7 +50,7 @@ const s = slides[0];
           >
             {cta} <ArrowRight class="h-4 w-4" />
           </a>
-          <BookmarkButton client:load href={s.key} title={s.title} variant="pill" />
+          <BookmarkButton client:idle href={s.key} title={s.title} variant="pill" />
         </div>
       </div>
     </div>

@@ -178,14 +178,16 @@
     }
   }
   .hero-fill {
-    width: 0;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
     animation-name: hero-fill;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
   }
   @keyframes hero-fill {
     to {
-      width: 100%;
+      transform: scaleX(1);
     }
   }
 </style>
