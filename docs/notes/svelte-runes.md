@@ -8,8 +8,8 @@ updated: 2026-10-20
 videos:
   - id: RVnxF3j3N8U
     title: Svelte 5 introduction
-  - id: Ndo-1dAd9bA
-    title: Runes deep dive
+  - id: AdNJ3fydeao
+    title: Rethinking reactivity
 ---
 
 ## `$state`

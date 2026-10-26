@@ -1,0 +1,98 @@
+---
+/**
+ * Streaming-style catalog card: 16:9 banner, title overlaid on a gradient,
+ * kind icon, duration pill, hue glow on hover. Playlists get stacked layers.
+ */
+import type { CatalogItem } from "../../lib/nav";
+import { withBase, cn } from "../../lib/utils";
+import { ListVideo, FileText, Play } from "lucide-svelte";
+
+interface Props {
+  item: CatalogItem;
+  /** Show description + tags beneath the banner (grids). */
+  details?: boolean;
+  /** Larger title / padding for grids. */
+  size?: "md" | "lg";
+  class?: string;
+}
+const { item, details = false, size = "md", class: className } = Astro.props;
+const isPlaylist = item.kind === "playlist";
+const pill = isPlaylist
+  ? `${item.docCount ?? 0} ${item.docCount === 1 ? "doc" : "docs"}`
+  : `${item.readingMinutes ?? 1} min`;
+const glow = `hsl(${item.hue} 70% 50% / 0.4)`;
+const label = isPlaylist ? "Playlist" : "Article";
+---
+
+<a
+  href={withBase(item.href)}
+  class={cn(
+    "group relative block transform-gpu outline-none transition-transform duration-300 ease-out will-change-transform hover:-translate-y-1 hover:scale-[1.03] focus-visible:scale-[1.03]",
+    isPlaylist && "pt-2.5",
+    className,
+  )}
+  style={`--glow: ${glow}; --tint: hsl(${item.hue} 55% 55% / 0.45); --tint-2: hsl(${item.hue} 55% 55% / 0.25)`}
+  aria-label={`${label}: ${item.title}`}
+  data-kind={item.kind}
+>
+  {isPlaylist && (
+    <>
+      <span
+        aria-hidden="true"
+        class="absolute inset-x-5 top-0 h-6 rounded-xl bg-[var(--tint-2)] transition-transform duration-300 group-hover:-translate-y-1"
+      ></span>
+      <span
+        aria-hidden="true"
+        class="absolute inset-x-2.5 top-1.5 h-6 rounded-xl bg-[var(--tint)] transition-transform duration-300 group-hover:-translate-y-0.5"
+      ></span>
+    </>
+  )}
+
+  <div
+    class="relative aspect-video overflow-hidden rounded-xl bg-muted ring-1 ring-foreground/0 transition-shadow duration-300 ease-out group-hover:shadow-[0_20px_40px_-12px_var(--glow)] group-hover:ring-foreground/15 group-focus-visible:ring-2 group-focus-visible:ring-ring"
+  >
+    <img
+      src={item.banner}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/5"></div>
+
+    <span
+      class="absolute right-2 top-2 inline-flex items-center gap-1 rounded-md bg-black/65 px-1.5 py-0.5 font-mono text-[11px] font-medium text-white backdrop-blur-sm"
+    >
+      {item.videos.length > 0 && <Play class="h-3 w-3" fill="currentColor" />}
+      {pill}
+    </span>
+
+    <div class={cn("absolute inset-x-0 bottom-0 p-3", size === "lg" && "p-4")}>
+      <div class="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-white/70">
+        {isPlaylist ? <ListVideo class="h-3.5 w-3.5" /> : <FileText class="h-3.5 w-3.5" />}
+        <span>{label}</span>
+      </div>
+      <h3
+        class={cn(
+          "mt-0.5 line-clamp-2 font-semibold leading-snug text-white drop-shadow",
+          size === "lg" ? "text-lg" : "text-sm md:text-[15px]",
+        )}
+      >
+        {item.title}
+      </h3>
+    </div>
+  </div>
+
+  {details && (
+    <div class="mt-3 space-y-1.5 px-0.5">
+      {item.description && <p class="line-clamp-2 text-sm text-muted-foreground">{item.description}</p>}
+      {item.tags.length > 0 && (
+        <p class="flex flex-wrap gap-1.5">
+          {item.tags.map((t) => (
+            <span class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground">#{t}</span>
+          ))}
+        </p>
+      )}
+    </div>
+  )}
+</a>

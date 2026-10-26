@@ -1,9 +1,11 @@
 title: How this site works
-description: Writing, components, deploying. Everything about the docs site itself.
+description: The stack behind this site, how to write and organise docs, the interactive blocks, and how it ships to GitHub Pages.
 accent: 210
 tags: [meta]
-order: 2
+order: 1
+featured: true
 docs:
+  - getting-started/how-this-site-is-built
   - getting-started/writing-docs
   - getting-started/components
   - guides/deploying

@@ -1,0 +1,80 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPlaylists, getPlaylistDocs, playlistToItem, docToItem } from "../../lib/nav";
+import { withBase } from "../../lib/utils";
+import Hero from "../../components/catalog/Hero.astro";
+import { toSlide } from "../../components/catalog/hero";
+import { Play, BookOpen, ChevronRight, Clock } from "lucide-svelte";
+
+export async function getStaticPaths() {
+  const playlists = await getPlaylists();
+  return Promise.all(
+    playlists.map(async (playlist) => {
+      const docs = (await getPlaylistDocs(playlist)).map(docToItem);
+      const item = await playlistToItem(playlist);
+      return { params: { id: playlist.id }, props: { item, docs } };
+    }),
+  );
+}
+
+const { item, docs } = Astro.props;
+const totalMinutes = docs.reduce((n, d) => n + (d.readingMinutes ?? 0), 0);
+const slide = toSlide(item, {
+  href: docs[0] ? withBase(docs[0].href) : withBase(item.href),
+  meta: `Playlist · ${docs.length} ${docs.length === 1 ? "doc" : "docs"} · ${totalMinutes} min read`,
+});
+---
+
+<BaseLayout title={item.title} description={item.description} variant="immersive">
+  <main class="flex-1 pb-20">
+    <Hero slides={[slide]} cta={docs[0] ? "Start reading" : "Open"} />
+
+    <div class="mx-auto max-w-screen-2xl space-y-16 px-4 pt-4 md:px-8">
+      <section id="read" class="scroll-mt-24">
+        <div class="mb-6 flex items-baseline justify-between">
+          <h2 class="inline-flex items-center gap-2 text-xl font-bold tracking-tight md:text-2xl">
+            <BookOpen class="h-5 w-5" /> Read
+          </h2>
+          <span class="text-sm text-muted-foreground">{docs.length} {docs.length === 1 ? "part" : "parts"} · {totalMinutes} min</span>
+        </div>
+
+        {docs.length > 0 ? (
+          <ol class="max-w-4xl divide-y rounded-2xl border bg-card/50">
+            {docs.map((d, i) => (
+              <li>
+                <a
+                  href={withBase(d.href)}
+                  class="group flex items-center gap-4 p-4 transition hover:bg-accent/60 md:gap-6 md:p-5"
+                  style={`--glow: hsl(${item.hue} 70% 50% / 0.35)`}
+                >
+                  <span
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold text-white shadow-lg transition group-hover:shadow-[0_8px_24px_-6px_var(--glow)]"
+                    style={`background: hsl(${item.hue} 60% 45%)`}
+                  >
+                    {i + 1}
+                  </span>
+                  <span class="hidden w-40 shrink-0 overflow-hidden rounded-lg sm:block">
+                    <img src={d.banner} alt="" loading="lazy" class="aspect-video w-full object-cover transition duration-300 group-hover:scale-105" />
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block truncate font-semibold md:text-lg">{d.title}</span>
+                    {d.description && <span class="mt-0.5 line-clamp-2 block text-sm text-muted-foreground">{d.description}</span>}
+                    <span class="mt-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock class="h-3 w-3" /> {d.readingMinutes} min read
+                      {d.videos.length > 0 && <span>· {d.videos.length} video{d.videos.length === 1 ? "" : "s"}</span>}
+                    </span>
+                  </span>
+                  <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-foreground" />
+                </a>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p class="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
+            This playlist has no docs yet. List ids under <code>docs:</code> in its YAML, or set <code>playlist: {item.id}</code> on a doc.
+          </p>
+        )}
+      </section>
+    </div>
+  </main>
+</BaseLayout>

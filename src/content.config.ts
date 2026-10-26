@@ -43,7 +43,6 @@ const playlists = defineCollection({
     tags: z.array(z.string()).default([]),
     order: z.number().default(999),
     featured: z.boolean().default(false),
-    videos: z.array(video).default([]),
     /** Doc ids in reading order, e.g. ["notes/svelte-runes"]. Docs with `playlist: <id>` are appended automatically. */
     docs: z.array(z.string()).default([]),
   }),

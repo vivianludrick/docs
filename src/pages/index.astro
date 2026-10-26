@@ -1,42 +1,48 @@
 ---
-import { getEntry, render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getNav } from "../lib/nav";
-import { withBase } from "../lib/utils";
-import { ArrowRight } from "lucide-svelte";
+import { getCatalog } from "../lib/nav";
+import { getEntry } from "astro:content";
+import Hero from "../components/catalog/Hero.astro";
+import { toSlide } from "../components/catalog/hero";
+import SearchBar from "../components/catalog/SearchBar.astro";
+import Row from "../components/catalog/Row.astro";
+import Grid from "../components/catalog/Grid.astro";
+import ContinueReading from "../components/catalog/ContinueReading.svelte";
+import Bookmarks from "../components/catalog/Bookmarks.svelte";
 
-const nav = await getNav();
+const catalog = await getCatalog();
 const home = await getEntry("docs", "index");
-const Content = home ? (await render(home)).Content : null;
-const firstDoc = nav.flatMap((g) => g.links)[0];
+
+const featured = catalog.featured.length ? catalog.featured : catalog.playlists.slice(0, 1);
+const slides = featured.map((i) => toSlide(i));
+
+// href (without base) -> card data, so "Continue reading" can show banners.
+const progressMeta = Object.fromEntries(
+  [...catalog.playlists, ...catalog.docs].map((i) => [i.href, { title: i.title, banner: i.banner, hue: i.hue, kind: i.kind }]),
+);
 ---
 
-<BaseLayout title={home?.data.title ?? "Vivian's Docs"} description={home?.data.description} current="/">
-  <main class="min-w-0 flex-1 py-10 lg:px-10">
-    <div class="prose mx-auto max-w-3xl">
-      <section class="mb-10">
-        <h1 class="text-5xl font-extrabold tracking-tight">{home?.data.title ?? "Docs"}</h1>
-        {home?.data.description && <p class="text-lg text-muted-foreground">{home.data.description}</p>}
-        {firstDoc && (
-          <a href={withBase(firstDoc.href)}
-            class="mt-4 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground no-underline hover:opacity-90">
-            Start reading <ArrowRight class="h-4 w-4" />
-          </a>
-        )}
+<BaseLayout title={home?.data.title ?? "Vivian's Docs"} description={home?.data.description} variant="immersive">
+  <main class="flex-1 pb-16">
+    {slides.length > 0 ? (
+      <Hero {slides} />
+    ) : (
+      <section class="mx-auto max-w-screen-2xl px-4 pb-10 pt-36 md:px-8">
+        <h1 class="text-5xl font-extrabold tracking-tight md:text-6xl">{home?.data.title ?? "Docs"}</h1>
+        {home?.data.description && <p class="mt-4 max-w-xl text-lg text-muted-foreground">{home.data.description}</p>}
       </section>
+    )}
 
-      {Content && <Content />}
+    <div class="relative z-10 mx-auto -mt-6 max-w-screen-2xl px-4 md:-mt-8 md:px-8">
+      <SearchBar class="max-w-2xl" />
+    </div>
 
-      <section class="not-prose mt-12 grid gap-4 sm:grid-cols-2">
-        {nav.filter((g) => g.links.length).map((g) => (
-          <a href={withBase(g.links[0].href)} class="rounded-xl border bg-card p-5 transition hover:bg-accent">
-            <h3 class="text-base font-semibold">{g.label}</h3>
-            <p class="mt-1 text-sm text-muted-foreground">
-              {g.links.length} page{g.links.length === 1 ? "" : "s"} · {g.links.slice(0, 3).map((l) => l.title).join(", ")}
-            </p>
-          </a>
-        ))}
-      </section>
+    <div class="mt-12 space-y-6 md:mt-16 md:space-y-8">
+      <ContinueReading client:load items={progressMeta} base={import.meta.env.BASE_URL} />
+
+      <Row title="Recently updated" items={catalog.recent} />
+      <Bookmarks client:load items={progressMeta} base={import.meta.env.BASE_URL} />
+      <Grid title="All articles" items={catalog.docs} href="/library" />
     </div>
   </main>
 </BaseLayout>

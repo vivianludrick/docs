@@ -27,13 +27,21 @@ export function bannerSvg(seed: string, opts: BannerOptions = {}) {
   const r = hash(seed + "x");
   const h2 = (hue + 40 + (r % 60)) % 360;
   const h3 = (hue + 300) % 360;
-  const label = (opts.label ?? seed.replace(/[^a-z0-9 ]/gi, "").split(/\s+/).map((p) => p[0]).join("").slice(0, 2)).toUpperCase();
+  const label = (
+    opts.label ??
+    seed
+      .replace(/[^a-z0-9 ]/gi, "")
+      .split(/\s+/)
+      .map((p) => p[0])
+      .join("")
+      .slice(0, 2)
+  ).toUpperCase();
 
   // A few soft blobs + a grid + big label. Everything is derived from the seed.
   const blobs = Array.from({ length: 4 }, (_, i) => {
     const s = hash(seed + i);
-    const cx = (s % 100) / 100 * w;
-    const cy = ((s >> 8) % 100) / 100 * h;
+    const cx = ((s % 100) / 100) * w;
+    const cy = (((s >> 8) % 100) / 100) * h;
     const rad = 180 + ((s >> 16) % 220);
     const hh = [hue, h2, h3, hue][i];
     return `<circle cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" r="${rad}" fill="hsl(${hh} 80% 60% / 0.55)" filter="url(#b)"/>`;

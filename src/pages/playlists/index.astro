@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCatalog } from "../../lib/nav";
+import Card from "../../components/catalog/Card.astro";
+import { ListVideo } from "lucide-svelte";
+
+const { playlists } = await getCatalog();
+const totalDocs = playlists.reduce((n, p) => n + (p.docCount ?? 0), 0);
+---
+
+<BaseLayout title="Playlists" description="Curated reading series with talks to watch alongside.">
+  <main class="mx-auto w-full max-w-screen-2xl flex-1 px-4 pb-20 pt-10 md:px-8 md:pt-14">
+    <header class="mb-10 max-w-2xl">
+      <p class="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <ListVideo class="h-3.5 w-3.5" /> Series
+      </p>
+      <h1 class="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">Playlists</h1>
+      <p class="mt-3 text-lg text-muted-foreground">
+        {playlists.length} {playlists.length === 1 ? "playlist" : "playlists"} · {totalDocs} docs, each with a
+        reading order and the talks worth watching first.
+      </p>
+    </header>
+
+    {playlists.length > 0 ? (
+      <div class="grid gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
+        {playlists.map((item) => (
+          <Card {item} details size="lg" />
+        ))}
+      </div>
+    ) : (
+      <p class="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
+        No playlists yet. Add a YAML file under <code>docs/playlists/</code>.
+      </p>
+    )}
+  </main>
+</BaseLayout>

@@ -1,23 +1,42 @@
 ---
+/**
+ * App shell. Owned by the integrator — subagents mount into the fixed slots below
+ * (header actions, settings dialog, AI assistant, selection popover) rather than editing this file.
+ */
 import "../styles/global.css";
-import ThemeToggle from "../components/ThemeToggle.svelte";
 import Search from "../components/Search.svelte";
-import MobileNav from "../components/MobileNav.svelte";
-import Sidebar from "../components/Sidebar.svelte";
-import { getNav } from "../lib/nav";
+import HeaderActions from "../components/HeaderActions.svelte";
+import SettingsDialog from "../components/SettingsDialog.svelte";
+import AiAssistant from "../components/ai/AiAssistant.svelte";
+import SelectionPopover from "../components/ai/SelectionPopover.svelte";
+import MobileTabBar from "../components/MobileTabBar.astro";
 import { withBase } from "../lib/utils";
 import { BookOpen } from "lucide-svelte";
+import { site } from "../site.config";
 
 interface Props {
   title: string;
   description?: string;
-  current?: string;
+  /** "immersive" = transparent header over a hero (dashboard/playlist). */
+  variant?: "default" | "immersive";
+  /** Extra classes for <body>. */
+  bodyClass?: string;
+  /** Phone-only bottom tab bar (Home / Playlists / Library / Bookmarks). Article pages turn it off. */
+  tabBar?: boolean;
+  /** Mount the AI assistant (floating button, chat, selection popover). Only article pages do. */
+  assistant?: boolean;
 }
-const { title, description = "Personal docs & learnings", current = "" } = Astro.props;
-const nav = await getNav();
+const { title, description = "Personal docs & learnings", variant = "default", bodyClass = "", tabBar = true, assistant = false } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const siteName = "Vivian's Docs";
-const repo = import.meta.env.PUBLIC_REPO_URL ?? "";
+const siteName = site.name;
+const repo = site.repoUrl;
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "Playlists", href: "/playlists" },
+  { label: "Library", href: "/library" },
+  { label: "Bookmarks", href: "/bookmarks" },
+];
+const path = Astro.url.pathname.replace(base.replace(/\/$/, ""), "") || "/";
 ---
 
 <!doctype html>
@@ -28,73 +47,78 @@ const repo = import.meta.env.PUBLIC_REPO_URL ?? "";
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <title>{title === siteName ? title : `${title} · ${siteName}`}</title>
     <script is:inline>
-      // Apply theme before paint to avoid a flash.
+      // Apply theme + mode before paint. Mirrors src/lib/settings.svelte.ts (keys: docs:prefs).
       (() => {
         try {
-          const s = localStorage.getItem("theme");
-          const dark = s ? s === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.classList.toggle("dark", dark);
+          const p = JSON.parse(localStorage.getItem("docs:prefs") || "{}");
+          const mode = p.mode || "auto";
+          const dark = mode === "auto" ? matchMedia("(prefers-color-scheme: dark)").matches : mode === "dark";
+          const el = document.documentElement;
+          el.classList.toggle("dark", dark);
+          el.dataset.theme = p.theme || "default";
+          el.dataset.font = p.font || "sans";
         } catch {}
       })();
     </script>
   </head>
-  <body class="min-h-full flex flex-col">
-    <header class="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div class="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4">
-        <MobileNav client:load>
-          <Sidebar {nav} {current} {base} />
-        </MobileNav>
-        <a href={withBase("/")} class="flex items-center gap-2 font-semibold">
+  <body class:list={["min-h-full flex flex-col", tabBar && "has-tabbar max-md:pb-24", bodyClass]}>
+    <header
+      class:list={[
+        "top-0 z-40 w-full",
+        variant === "immersive"
+          ? "absolute bg-gradient-to-b from-background/90 to-transparent"
+          : "sticky border-b bg-background/80 backdrop-blur",
+      ]}
+    >
+      <div class="mx-auto flex h-16 max-w-screen-2xl items-center gap-4 px-4 md:px-8">
+        <a href={withBase("/")} class="flex items-center gap-2 text-lg font-bold tracking-tight">
           <BookOpen class="h-5 w-5" />
-          <span>{siteName}</span>
+          <span class="hidden sm:inline">{siteName}</span>
         </a>
+        <nav class="hidden items-center gap-1 md:flex" aria-label="Primary">
+          {navLinks.map((l) => (
+            <a
+              href={withBase(l.href)}
+              class:list={[
+                "rounded-md px-3 py-1.5 text-sm font-medium transition hover:bg-accent",
+                (l.href === "/" ? path === "/" : path.startsWith(l.href)) ? "text-foreground" : "text-muted-foreground",
+              ]}
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
         <div class="ml-auto flex items-center gap-2">
           <Search client:load {base} />
+          <HeaderActions client:load />
           {repo && (
             <a href={repo} target="_blank" rel="noreferrer" aria-label="GitHub"
-              class="inline-flex h-9 w-9 items-center justify-center rounded-md border hover:bg-accent">
+              class="hidden h-9 w-9 items-center justify-center rounded-md border hover:bg-accent sm:inline-flex">
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
             </a>
           )}
-          <ThemeToggle client:load />
         </div>
       </div>
     </header>
 
-    <div class="mx-auto flex w-full max-w-screen-2xl flex-1 px-4">
-      <aside class="thin-scroll sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r py-8 pr-6 lg:block">
-        <Sidebar client:load {nav} {current} {base} />
-      </aside>
-      <slot />
-    </div>
+    <slot />
 
-    <footer class="border-t py-6 text-center text-xs text-muted-foreground">
-      Built with Astro, Svelte &amp; Vite+. Content lives in <code>/docs</code>.
+    <footer class="mt-auto border-t py-6 text-center text-xs text-muted-foreground">
+      Built with Astro, Svelte &amp; Vite+.
     </footer>
 
-    <script>
-      // Add a copy button to every code block.
-      for (const pre of document.querySelectorAll<HTMLPreElement>(".prose pre")) {
-        const wrap = document.createElement("div");
-        wrap.className = "code-block";
-        pre.replaceWith(wrap);
-        wrap.appendChild(pre);
-        const btn = document.createElement("button");
-        btn.className = "copy-btn";
-        btn.type = "button";
-        btn.setAttribute("aria-label", "Copy code");
-        const icon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
-        const check = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
-        btn.innerHTML = icon;
-        btn.addEventListener("click", async () => {
-          await navigator.clipboard.writeText(pre.innerText);
-          btn.innerHTML = check;
-          setTimeout(() => (btn.innerHTML = icon), 1500);
-        });
-        wrap.appendChild(btn);
-      }
-    </script>
+    {tabBar && <MobileTabBar {path} />}
+    <SettingsDialog client:idle />
+    {assistant && (
+      <>
+        <AiAssistant client:idle />
+        <SelectionPopover client:idle />
+      </>
+    )}
   </body>
 </html>

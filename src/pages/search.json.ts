@@ -1,24 +1,28 @@
 import type { APIRoute } from "astro";
-import { getDocs, docHref, getNav, isRenderable } from "../lib/nav";
+import { getCatalog } from "../lib/nav";
 
 export const GET: APIRoute = async () => {
-  const [docs, nav] = await Promise.all([getDocs(), getNav()]);
-  const sectionOf = (id: string) => {
-    const folder = id.includes("/") ? id.split("/")[0] : "";
-    return nav.find((g) => g.slug === folder)?.label ?? "";
-  };
-  const index = docs.filter(isRenderable).map((d) => ({
-    title: d.data.title,
-    description: d.data.description ?? "",
-    href: docHref(d),
-    section: sectionOf(d.id),
-    body: (d.body ?? "")
+  const catalog = await getCatalog();
+  const index = [...catalog.playlists, ...catalog.docs].map((it) => ({
+    title: it.title,
+    description: it.description ?? "",
+    href: it.href,
+    kind: it.kind,
+    section: it.kind === "playlist" ? `Playlist · ${it.docCount} docs` : it.tags.join(", "),
+    body: "",
+  }));
+  // Add searchable body text for docs
+  const { getDocs, isRenderable, docHref } = await import("../lib/nav");
+  const docs = (await getDocs()).filter(isRenderable);
+  const bodies = new Map(docs.map((d) => [docHref(d), d.body ?? ""]));
+  for (const it of index) {
+    it.body = (bodies.get(it.href) ?? "")
       .replace(/```[\s\S]*?```/g, " ")
       .replace(/<[^>]+>/g, " ")
-      .replace(/[#*_`>\[\]()]/g, " ")
+      .replace(/[#*_`>[\]()]/g, " ")
       .replace(/\s+/g, " ")
-      .slice(0, 4000),
-  }));
+      .slice(0, 4000);
+  }
   return new Response(JSON.stringify(index), {
     headers: { "Content-Type": "application/json" },
   });

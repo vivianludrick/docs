@@ -1,0 +1,45 @@
+---
+/**
+ * "Up next" card shown after an article. Colors come from the surrounding
+ * `.doc-scope` (--doc-accent*) so it follows the current doc's hue.
+ */
+import { ArrowRight, Clock } from "lucide-svelte";
+import { withBase } from "../../lib/utils";
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  href: string;
+  description?: string;
+  readingMinutes?: number;
+  banner?: string;
+}
+const { eyebrow, title, href, description, readingMinutes, banner } = Astro.props;
+---
+
+<a
+  href={withBase(href)}
+  class="group relative flex overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+  style="box-shadow: 0 1px 0 var(--doc-accent-soft)"
+>
+  <span class="w-1.5 shrink-0" style="background: var(--doc-accent-strong)" aria-hidden="true"></span>
+  <span class="flex min-w-0 flex-1 flex-col gap-1.5 p-5 sm:p-6">
+    <span class="text-[11px] font-semibold uppercase tracking-wider" style="color: var(--doc-accent)">{eyebrow}</span>
+    <span class="font-display text-xl font-semibold leading-snug tracking-tight sm:text-2xl">{title}</span>
+    {description && <span class="line-clamp-2 text-sm text-muted-foreground">{description}</span>}
+    <span class="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+      {readingMinutes && (
+        <span class="inline-flex items-center gap-1"><Clock class="h-3 w-3" /> {readingMinutes} min read</span>
+      )}
+      <span class="ml-auto inline-flex items-center gap-1 font-medium text-foreground">
+        Continue <ArrowRight class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </span>
+  </span>
+  {banner && (
+    <span class="relative hidden w-40 shrink-0 sm:block" aria-hidden="true">
+      <img src={banner} alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
+      <span class="absolute inset-0 bg-gradient-to-r from-card to-transparent"></span>
+    </span>
+  )}
+</a>

@@ -57,7 +57,8 @@
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        open ? (open = false) : show();
+        if (open) open = false;
+        else show();
       } else if (e.key === "Escape") open = false;
     };
     window.addEventListener("keydown", onKey);
@@ -74,10 +75,10 @@
 <button
   type="button"
   onclick={show}
-  class="inline-flex h-9 w-full items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground transition hover:bg-accent md:w-64"
+  class="inline-flex h-9 w-9 items-center justify-center gap-2 rounded-md border bg-background text-sm text-muted-foreground transition hover:bg-accent md:w-64 md:justify-start md:px-3"
 >
   <SearchIcon class="h-4 w-4" />
-  <span class="flex-1 text-left">Search docs…</span>
+  <span class="hidden flex-1 text-left md:inline">Search docs…</span>
   <kbd class="hidden rounded border bg-muted px-1.5 font-mono text-[10px] sm:inline">⌘K</kbd>
 </button>
 

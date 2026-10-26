@@ -1,0 +1,45 @@
+---
+/**
+ * Bottom tab bar for phones on browse pages (home, playlists, library, bookmarks, tags).
+ * Article pages pass `tabBar={false}` to BaseLayout and use their reading controls instead.
+ */
+import { withBase } from "../lib/utils";
+import { Home, ListVideo, Library, Bookmark } from "lucide-svelte";
+
+interface Props {
+  path: string; // base-less current path
+}
+const { path } = Astro.props;
+const tabs = [
+  { label: "Home", href: "/", icon: Home, match: (p: string) => p === "/" },
+  { label: "Playlists", href: "/playlists", icon: ListVideo, match: (p: string) => p.startsWith("/playlists") },
+  { label: "Library", href: "/library", icon: Library, match: (p: string) => p.startsWith("/library") || p.startsWith("/tags") },
+  { label: "Bookmarks", href: "/bookmarks", icon: Bookmark, match: (p: string) => p.startsWith("/bookmarks") },
+];
+---
+
+<nav
+  aria-label="Browse"
+  class="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 rounded-2xl border border-foreground/10 bg-background/80 shadow-[0_12px_40px_-12px_rgb(0_0_0/0.6)] ring-1 ring-black/5 backdrop-blur-xl md:hidden dark:ring-white/5"
+>
+  <ul class="grid grid-cols-4 px-1">
+    {tabs.map((t) => {
+      const active = t.match(path);
+      return (
+        <li>
+          <a
+            href={withBase(t.href)}
+            aria-current={active ? "page" : undefined}
+            class:list={[
+              "flex flex-col items-center gap-1 rounded-xl py-2.5 text-[11px] font-medium transition",
+              active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+            ]}
+          >
+            <t.icon class:list={["h-5 w-5", active && "fill-current/10"]} />
+            {t.label}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>

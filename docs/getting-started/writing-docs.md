@@ -33,6 +33,29 @@ docs/
 
 A folder's own `index.md` controls the group label and group order.
 
+## Playlists
+
+A playlist is a YAML file in `docs/playlists/`. It groups docs (and videos) into a
+series with its own banner and page.
+
+```yaml
+# docs/playlists/site-meta.yaml
+title: How this site works
+description: The stack, how to write docs, and how it deploys.
+accent: 210
+tags: [meta]
+featured: true
+docs:
+  - getting-started/how-this-site-is-built
+  - getting-started/writing-docs
+```
+
+Playlists only group documents. Videos always belong to a document (`videos:` in its
+frontmatter), and a playlist's "Watch" button jumps to the first document that has one.
+
+Docs listed under `docs:` come first in that order. Any doc whose frontmatter says
+`playlist: site-meta` is appended automatically.
+
 ## Code blocks
 
 Fenced code gets Shiki highlighting with a light/dark theme and a copy button.

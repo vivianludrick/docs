@@ -148,6 +148,8 @@ export interface CatalogItem {
   readingMinutes?: number; // docs only
   docCount?: number; // playlists only
   videos: Video[];
+  /** Where the "Watch" button should go (base-less). Playlists point at their first doc that has a video. */
+  watchHref: string | null;
 }
 
 export function readingMinutes(body: string | undefined) {
@@ -178,6 +180,7 @@ export function docToItem(d: DocEntry): CatalogItem {
     updated: d.data.updated,
     readingMinutes: readingMinutes(d.body),
     videos: d.data.videos,
+    watchHref: d.data.videos.length ? `${docHref(d)}#videos` : null,
   };
 }
 
@@ -212,11 +215,21 @@ export async function playlistToItem(p: PlaylistEntry): Promise<CatalogItem> {
     hue,
     tags: p.data.tags,
     featured: p.data.featured,
-    updated: docs.map((d) => d.data.updated).filter(Boolean).sort((a, b) => b!.getTime() - a!.getTime())[0],
+    updated: docs
+      .map((d) => d.data.updated)
+      .filter(Boolean)
+      .sort((a, b) => b!.getTime() - a!.getTime())[0],
     docCount: docs.length,
-    videos: p.data.videos,
+    videos: docs.flatMap((d) => d.data.videos),
+    watchHref: (() => {
+      const first = docs.find((d) => d.data.videos.length);
+      return first ? `${docHref(first)}#videos` : null;
+    })(),
   };
 }
+
+/** Maximum number of slides in the home-page hero. */
+export const HERO_MAX_SLIDES = 5;
 
 export async function getCatalog() {
   const [docs, playlists] = await Promise.all([getDocs(), getPlaylists()]);
@@ -230,7 +243,15 @@ export async function getCatalog() {
     docs: docItems,
     playlists: playlistItems,
     tags: [...tags.entries()].sort((a, b) => b[1].length - a[1].length),
-    featured: [...playlistItems, ...docItems].filter((i) => i.featured),
-    recent: [...docItems].filter((d) => d.updated).sort((a, b) => b.updated!.getTime() - a.updated!.getTime()).slice(0, 12),
+    // Hero rotation: featured items, most recently updated first, capped so a
+    // long-lived site can't end up with dozens of slides (and banner preloads).
+    featured: [...playlistItems, ...docItems]
+      .filter((i) => i.featured)
+      .sort((a, b) => (b.updated?.getTime() ?? 0) - (a.updated?.getTime() ?? 0))
+      .slice(0, HERO_MAX_SLIDES),
+    recent: [...docItems]
+      .filter((d) => d.updated)
+      .sort((a, b) => b.updated!.getTime() - a.updated!.getTime())
+      .slice(0, 12),
   };
 }

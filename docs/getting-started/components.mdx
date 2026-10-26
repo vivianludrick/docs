@@ -9,6 +9,7 @@ import Steps from "@components/Steps.svelte";
 import Step from "@components/Step.svelte";
 import Callout from "@components/Callout.svelte";
 import Counter from "@components/Counter.svelte";
+import Video from "@components/Video.svelte";
 
 Files ending in `.mdx` can import any Svelte component from `src/components`
 using the `@components/*` alias, then use it like HTML.
@@ -44,6 +45,19 @@ import Callout from "@components/Callout.svelte";
 <Callout client:load type="warning">
   Drafts are visible in `pnpm dev` but hidden from the deployed site.
 </Callout>
+
+## Inline video block
+
+A document is a sequence of blocks you read or watch. Besides the `videos:` list in
+frontmatter (shown at the top), you can place a video anywhere in an `.mdx` file:
+
+```mdx
+import Video from "@components/Video.svelte";
+
+<Video client:visible id="AdNJ3fydeao" title="Rethinking reactivity" />
+```
+
+<Video client:visible id="AdNJ3fydeao" title="Rich Harris — Rethinking reactivity" />
 
 ## Counter
 

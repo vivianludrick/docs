@@ -1,0 +1,447 @@
+/*
+ * Theme presets. Each preset overrides the shadcn/ui token set from global.css for
+ * html[data-theme="<id>"] (light) and html[data-theme="<id>"].dark (dark). The dark
+ * selector carries the extra class so it wins over the light block, and both outrank
+ * the plain :root / .dark defaults. "default" has no block — it uses global.css as-is.
+ *
+ * --brand-glow: the accent as an rgb() with alpha, for soft glows/shadows, e.g.
+ *   box-shadow: 0 0 48px var(--brand-glow);  or  shadow-[0_0_48px_var(--brand-glow)]
+ *
+ * Palettes were checked for WCAG AA (>= 4.5:1) on text pairs: foreground/background,
+ * muted-foreground/background, primary (link text)/background, primary-foreground/primary.
+ */
+
+/* Fallback glow for the default (neutral) theme. */
+:root {
+  --brand-glow: rgb(23 23 23 / 0.18);
+}
+.dark {
+  --brand-glow: rgb(250 250 250 / 0.18);
+}
+
+/* ---- Catppuccin — Latte (light) / Mocha (dark). Accent: mauve. ---- */
+html[data-theme="catppuccin"] {
+  --background: #eff1f5;
+  --foreground: #4c4f69;
+  --card: #ffffff;
+  --card-foreground: #4c4f69;
+  --popover: #ffffff;
+  --popover-foreground: #4c4f69;
+  --primary: #8839ef;
+  --primary-foreground: #ffffff;
+  --secondary: #e6e9ef;
+  --secondary-foreground: #4c4f69;
+  --muted: #e6e9ef;
+  --muted-foreground: #5c5f77;
+  --accent: #dce0e8;
+  --accent-foreground: #4c4f69;
+  --destructive: #d20f39;
+  --border: #ccd0da;
+  --input: #bcc0cc;
+  --ring: #8839ef;
+  --sidebar: #e6e9ef;
+  --sidebar-foreground: #4c4f69;
+  --sidebar-primary: #8839ef;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dce0e8;
+  --sidebar-accent-foreground: #4c4f69;
+  --sidebar-border: #ccd0da;
+  --sidebar-ring: #8839ef;
+  --brand-glow: rgb(136 57 239 / 0.35);
+}
+
+html[data-theme="catppuccin"].dark {
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --card: #181825;
+  --card-foreground: #cdd6f4;
+  --popover: #181825;
+  --popover-foreground: #cdd6f4;
+  --primary: #cba6f7;
+  --primary-foreground: #1e1e2e;
+  --secondary: #313244;
+  --secondary-foreground: #cdd6f4;
+  --muted: #313244;
+  --muted-foreground: #a6adc8;
+  --accent: #313244;
+  --accent-foreground: #cdd6f4;
+  --destructive: #f38ba8;
+  --border: #45475a;
+  --input: #585b70;
+  --ring: #cba6f7;
+  --sidebar: #181825;
+  --sidebar-foreground: #cdd6f4;
+  --sidebar-primary: #cba6f7;
+  --sidebar-primary-foreground: #1e1e2e;
+  --sidebar-accent: #313244;
+  --sidebar-accent-foreground: #cdd6f4;
+  --sidebar-border: #45475a;
+  --sidebar-ring: #cba6f7;
+  --brand-glow: rgb(203 166 247 / 0.35);
+}
+
+/* ---- Nord — Snow Storm (light) / Polar Night (dark). Accent: frost blue (nord10, deepened slightly for AA link text in light mode). ---- */
+html[data-theme="nord"] {
+  --background: #eceff4;
+  --foreground: #2e3440;
+  --card: #ffffff;
+  --card-foreground: #2e3440;
+  --popover: #ffffff;
+  --popover-foreground: #2e3440;
+  --primary: #4a6a92;
+  --primary-foreground: #ffffff;
+  --secondary: #e5e9f0;
+  --secondary-foreground: #2e3440;
+  --muted: #e5e9f0;
+  --muted-foreground: #4c566a;
+  --accent: #e5e9f0;
+  --accent-foreground: #2e3440;
+  --destructive: #bf616a;
+  --border: #d8dee9;
+  --input: #c9d1de;
+  --ring: #4a6a92;
+  --sidebar: #e5e9f0;
+  --sidebar-foreground: #2e3440;
+  --sidebar-primary: #4a6a92;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e5e9f0;
+  --sidebar-accent-foreground: #2e3440;
+  --sidebar-border: #d8dee9;
+  --sidebar-ring: #4a6a92;
+  --brand-glow: rgb(74 106 146 / 0.35);
+}
+
+html[data-theme="nord"].dark {
+  --background: #2e3440;
+  --foreground: #eceff4;
+  --card: #3b4252;
+  --card-foreground: #eceff4;
+  --popover: #3b4252;
+  --popover-foreground: #eceff4;
+  --primary: #88c0d0;
+  --primary-foreground: #2e3440;
+  --secondary: #434c5e;
+  --secondary-foreground: #eceff4;
+  --muted: #434c5e;
+  --muted-foreground: #b8c0d0;
+  --accent: #434c5e;
+  --accent-foreground: #eceff4;
+  --destructive: #bf616a;
+  --border: #4c566a;
+  --input: #4c566a;
+  --ring: #88c0d0;
+  --sidebar: #3b4252;
+  --sidebar-foreground: #eceff4;
+  --sidebar-primary: #88c0d0;
+  --sidebar-primary-foreground: #2e3440;
+  --sidebar-accent: #434c5e;
+  --sidebar-accent-foreground: #eceff4;
+  --sidebar-border: #4c566a;
+  --sidebar-ring: #88c0d0;
+  --brand-glow: rgb(136 192 208 / 0.35);
+}
+
+/* ---- Ayu — Light / Mirage (dark). Accent: orange (Mirage keyword #ffad66; light uses a deepened Ayu orange for AA). ---- */
+html[data-theme="ayu"] {
+  --background: #fcfcfc;
+  --foreground: #5c6166;
+  --card: #ffffff;
+  --card-foreground: #5c6166;
+  --popover: #ffffff;
+  --popover-foreground: #5c6166;
+  --primary: #b85305;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f5;
+  --secondary-foreground: #5c6166;
+  --muted: #f3f4f5;
+  --muted-foreground: #5f6f80;
+  --accent: #f0f1f2;
+  --accent-foreground: #5c6166;
+  --destructive: #e65050;
+  --border: #e0e3e6;
+  --input: #d4d8dc;
+  --ring: #b85305;
+  --sidebar: #f8f9fa;
+  --sidebar-foreground: #5c6166;
+  --sidebar-primary: #b85305;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0f1f2;
+  --sidebar-accent-foreground: #5c6166;
+  --sidebar-border: #e0e3e6;
+  --sidebar-ring: #b85305;
+  --brand-glow: rgb(184 83 5 / 0.35);
+}
+
+html[data-theme="ayu"].dark {
+  --background: #1f2430;
+  --foreground: #cccac2;
+  --card: #1c212b;
+  --card-foreground: #cccac2;
+  --popover: #1c212b;
+  --popover-foreground: #cccac2;
+  --primary: #ffad66;
+  --primary-foreground: #1f2430;
+  --secondary: #242936;
+  --secondary-foreground: #cccac2;
+  --muted: #242936;
+  --muted-foreground: #8a9199;
+  --accent: #2a3040;
+  --accent-foreground: #cccac2;
+  --destructive: #ff6666;
+  --border: #343b4a;
+  --input: #3d4555;
+  --ring: #ffad66;
+  --sidebar: #1c212b;
+  --sidebar-foreground: #cccac2;
+  --sidebar-primary: #ffad66;
+  --sidebar-primary-foreground: #1f2430;
+  --sidebar-accent: #2a3040;
+  --sidebar-accent-foreground: #cccac2;
+  --sidebar-border: #343b4a;
+  --sidebar-ring: #ffad66;
+  --brand-glow: rgb(255 173 102 / 0.35);
+}
+
+/* ---- Dracula — Alucard (light) / Dracula (dark). Accent: purple. ---- */
+html[data-theme="dracula"] {
+  --background: #fffbeb;
+  --foreground: #1f1f1f;
+  --card: #fffdf5;
+  --card-foreground: #1f1f1f;
+  --popover: #fffdf5;
+  --popover-foreground: #1f1f1f;
+  --primary: #644ac9;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f0db;
+  --secondary-foreground: #1f1f1f;
+  --muted: #f5f0db;
+  --muted-foreground: #6c664b;
+  --accent: #ece7d3;
+  --accent-foreground: #1f1f1f;
+  --destructive: #cb3a2a;
+  --border: #e6e0c8;
+  --input: #d9d3bb;
+  --ring: #644ac9;
+  --sidebar: #faf6e3;
+  --sidebar-foreground: #1f1f1f;
+  --sidebar-primary: #644ac9;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ece7d3;
+  --sidebar-accent-foreground: #1f1f1f;
+  --sidebar-border: #e6e0c8;
+  --sidebar-ring: #644ac9;
+  --brand-glow: rgb(100 74 201 / 0.35);
+}
+
+html[data-theme="dracula"].dark {
+  --background: #282a36;
+  --foreground: #f8f8f2;
+  --card: #21222c;
+  --card-foreground: #f8f8f2;
+  --popover: #21222c;
+  --popover-foreground: #f8f8f2;
+  --primary: #bd93f9;
+  --primary-foreground: #282a36;
+  --secondary: #343746;
+  --secondary-foreground: #f8f8f2;
+  --muted: #343746;
+  --muted-foreground: #a8b0d4;
+  --accent: #44475a;
+  --accent-foreground: #f8f8f2;
+  --destructive: #ff5555;
+  --border: #44475a;
+  --input: #4f5370;
+  --ring: #bd93f9;
+  --sidebar: #21222c;
+  --sidebar-foreground: #f8f8f2;
+  --sidebar-primary: #bd93f9;
+  --sidebar-primary-foreground: #282a36;
+  --sidebar-accent: #44475a;
+  --sidebar-accent-foreground: #f8f8f2;
+  --sidebar-border: #44475a;
+  --sidebar-ring: #bd93f9;
+  --brand-glow: rgb(189 147 249 / 0.35);
+}
+
+/* ---- Rosé Pine — Dawn (light) / Moon (dark). Accent: iris (Dawn iris deepened slightly for AA link text). ---- */
+html[data-theme="rose-pine"] {
+  --background: #faf4ed;
+  --foreground: #575279;
+  --card: #fffaf3;
+  --card-foreground: #575279;
+  --popover: #fffaf3;
+  --popover-foreground: #575279;
+  --primary: #7a6496;
+  --primary-foreground: #ffffff;
+  --secondary: #f2e9e1;
+  --secondary-foreground: #575279;
+  --muted: #f2e9e1;
+  --muted-foreground: #6e6a86;
+  --accent: #f4ede8;
+  --accent-foreground: #575279;
+  --destructive: #b4637a;
+  --border: #dfdad9;
+  --input: #cecacd;
+  --ring: #7a6496;
+  --sidebar: #f2e9e1;
+  --sidebar-foreground: #575279;
+  --sidebar-primary: #7a6496;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4ede8;
+  --sidebar-accent-foreground: #575279;
+  --sidebar-border: #dfdad9;
+  --sidebar-ring: #7a6496;
+  --brand-glow: rgb(122 100 150 / 0.35);
+}
+
+html[data-theme="rose-pine"].dark {
+  --background: #232136;
+  --foreground: #e0def4;
+  --card: #2a273f;
+  --card-foreground: #e0def4;
+  --popover: #2a273f;
+  --popover-foreground: #e0def4;
+  --primary: #c4a7e7;
+  --primary-foreground: #232136;
+  --secondary: #393552;
+  --secondary-foreground: #e0def4;
+  --muted: #393552;
+  --muted-foreground: #a9a5c4;
+  --accent: #393552;
+  --accent-foreground: #e0def4;
+  --destructive: #eb6f92;
+  --border: #44415a;
+  --input: #56526e;
+  --ring: #c4a7e7;
+  --sidebar: #2a273f;
+  --sidebar-foreground: #e0def4;
+  --sidebar-primary: #c4a7e7;
+  --sidebar-primary-foreground: #232136;
+  --sidebar-accent: #393552;
+  --sidebar-accent-foreground: #e0def4;
+  --sidebar-border: #44415a;
+  --sidebar-ring: #c4a7e7;
+  --brand-glow: rgb(196 167 231 / 0.35);
+}
+
+/* ---- Tokyo Night — Day (light) / Night (dark). Accent: blue. ---- */
+html[data-theme="tokyo-night"] {
+  --background: #e1e2e7;
+  --foreground: #343b58;
+  --card: #e9e9ec;
+  --card-foreground: #343b58;
+  --popover: #e9e9ec;
+  --popover-foreground: #343b58;
+  --primary: #3760bf;
+  --primary-foreground: #ffffff;
+  --secondary: #d5d6db;
+  --secondary-foreground: #343b58;
+  --muted: #d5d6db;
+  --muted-foreground: #5a607e;
+  --accent: #d0d5e3;
+  --accent-foreground: #343b58;
+  --destructive: #c64343;
+  --border: #c4c8da;
+  --input: #b4b8cc;
+  --ring: #3760bf;
+  --sidebar: #d5d6db;
+  --sidebar-foreground: #343b58;
+  --sidebar-primary: #3760bf;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d0d5e3;
+  --sidebar-accent-foreground: #343b58;
+  --sidebar-border: #c4c8da;
+  --sidebar-ring: #3760bf;
+  --brand-glow: rgb(55 96 191 / 0.35);
+}
+
+html[data-theme="tokyo-night"].dark {
+  --background: #1a1b26;
+  --foreground: #c0caf5;
+  --card: #16161e;
+  --card-foreground: #c0caf5;
+  --popover: #16161e;
+  --popover-foreground: #c0caf5;
+  --primary: #7aa2f7;
+  --primary-foreground: #1a1b26;
+  --secondary: #24283b;
+  --secondary-foreground: #c0caf5;
+  --muted: #24283b;
+  --muted-foreground: #9aa5ce;
+  --accent: #292e42;
+  --accent-foreground: #c0caf5;
+  --destructive: #f7768e;
+  --border: #292e42;
+  --input: #3b4261;
+  --ring: #7aa2f7;
+  --sidebar: #16161e;
+  --sidebar-foreground: #c0caf5;
+  --sidebar-primary: #7aa2f7;
+  --sidebar-primary-foreground: #1a1b26;
+  --sidebar-accent: #292e42;
+  --sidebar-accent-foreground: #c0caf5;
+  --sidebar-border: #292e42;
+  --sidebar-ring: #7aa2f7;
+  --brand-glow: rgb(122 162 247 / 0.35);
+}
+
+/* ---- Gruvbox — Light / Dark. Accent: orange (faded orange in light, bright orange in dark). ---- */
+html[data-theme="gruvbox"] {
+  --background: #fbf1c7;
+  --foreground: #3c3836;
+  --card: #f9f5d7;
+  --card-foreground: #3c3836;
+  --popover: #f9f5d7;
+  --popover-foreground: #3c3836;
+  --primary: #af3a03;
+  --primary-foreground: #fbf1c7;
+  --secondary: #ebdbb2;
+  --secondary-foreground: #3c3836;
+  --muted: #ebdbb2;
+  --muted-foreground: #665c54;
+  --accent: #f2e5bc;
+  --accent-foreground: #3c3836;
+  --destructive: #9d0006;
+  --border: #d5c4a1;
+  --input: #bdae93;
+  --ring: #af3a03;
+  --sidebar: #f2e5bc;
+  --sidebar-foreground: #3c3836;
+  --sidebar-primary: #af3a03;
+  --sidebar-primary-foreground: #fbf1c7;
+  --sidebar-accent: #f2e5bc;
+  --sidebar-accent-foreground: #3c3836;
+  --sidebar-border: #d5c4a1;
+  --sidebar-ring: #af3a03;
+  --brand-glow: rgb(175 58 3 / 0.35);
+}
+
+html[data-theme="gruvbox"].dark {
+  --background: #282828;
+  --foreground: #ebdbb2;
+  --card: #1d2021;
+  --card-foreground: #ebdbb2;
+  --popover: #1d2021;
+  --popover-foreground: #ebdbb2;
+  --primary: #fe8019;
+  --primary-foreground: #282828;
+  --secondary: #3c3836;
+  --secondary-foreground: #ebdbb2;
+  --muted: #3c3836;
+  --muted-foreground: #bdae93;
+  --accent: #3c3836;
+  --accent-foreground: #ebdbb2;
+  --destructive: #fb4934;
+  --border: #504945;
+  --input: #665c54;
+  --ring: #fe8019;
+  --sidebar: #1d2021;
+  --sidebar-foreground: #ebdbb2;
+  --sidebar-primary: #fe8019;
+  --sidebar-primary-foreground: #282828;
+  --sidebar-accent: #3c3836;
+  --sidebar-accent-foreground: #ebdbb2;
+  --sidebar-border: #504945;
+  --sidebar-ring: #fe8019;
+  --brand-glow: rgb(254 128 25 / 0.35);
+}

@@ -3,6 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Theme presets (catppuccin, nord, …) override the token values below per html[data-theme]. */
+@import "./themes.css";
+
 /* ---------- shadcn/ui design tokens ---------- */
 :root {
   --radius: 0.625rem;
@@ -103,8 +106,11 @@
     @apply border-border outline-ring/50;
   }
   html {
-    scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+  }
+  html,
+  body {
+    overflow-x: clip;
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -114,115 +120,306 @@
   }
 }
 
-/* ---------- Markdown prose (hand-rolled, token based) ---------- */
+/* Display serif for article titles (body font is user-switchable via html[data-font]). */
+@utility font-display {
+  font-family: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
+}
+
+/* ---------- Article accent (hue set per doc via style="--doc-hue: N") ---------- */
+/* Derived colors live on the same element as --doc-hue so the hue actually resolves. */
+.doc-scope {
+  --doc-accent: hsl(var(--doc-hue, 220) 62% 42%);
+  --doc-accent-strong: hsl(var(--doc-hue, 220) 70% 50%);
+  --doc-accent-soft: hsl(var(--doc-hue, 220) 70% 55% / 0.12);
+  --doc-accent-line: hsl(var(--doc-hue, 220) 70% 55% / 0.45);
+}
+.dark .doc-scope {
+  --doc-accent: hsl(var(--doc-hue, 220) 72% 72%);
+  --doc-accent-strong: hsl(var(--doc-hue, 220) 75% 62%);
+  --doc-accent-soft: hsl(var(--doc-hue, 220) 70% 60% / 0.16);
+  --doc-accent-line: hsl(var(--doc-hue, 220) 70% 65% / 0.5);
+}
+
+/* ---------- Markdown prose (hand-rolled, token based, book-like) ---------- */
 .prose {
-  @apply text-[15.5px] leading-7 text-foreground;
+  @apply text-foreground;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga", "calt";
+}
+@media (min-width: 48rem) {
+  .prose {
+    font-size: 17.5px;
+  }
+}
+html[data-font="serif"] .prose {
+  font-family: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.7;
+}
+@media (min-width: 48rem) {
+  html[data-font="serif"] .prose {
+    font-size: 18.5px;
+  }
+}
+/* Headings stay Inter in both reading fonts. */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  @apply scroll-mt-24 text-balance font-semibold tracking-tight text-foreground;
+  letter-spacing: -0.02em;
 }
 .prose > :first-child {
   @apply mt-0;
 }
 .prose h1 {
-  @apply mt-2 mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight;
+  @apply mt-2 mb-6 text-4xl font-extrabold;
 }
 .prose h2 {
-  @apply mt-12 mb-4 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight;
+  @apply mt-16 mb-5 text-[1.65rem] leading-tight;
+}
+.prose h2::before {
+  content: "";
+  @apply mb-4 block h-0.5 w-10 rounded-full;
+  background: var(--doc-accent-strong, var(--primary));
 }
 .prose h3 {
-  @apply mt-8 mb-3 scroll-m-20 text-xl font-semibold tracking-tight;
+  @apply mt-10 mb-3 text-xl leading-snug;
 }
 .prose h4 {
-  @apply mt-6 mb-2 scroll-m-20 text-lg font-semibold tracking-tight;
+  @apply mt-8 mb-2 text-lg leading-snug;
+}
+.prose h5,
+.prose h6 {
+  @apply mt-6 mb-2 text-base;
+}
+.prose h2 + h3,
+.prose h3 + h4 {
+  @apply mt-4;
 }
 .prose p {
-  @apply my-4;
+  @apply my-5;
+}
+.prose > p + p {
+  @apply mt-4;
+}
+.prose .lead,
+.prose > p:first-child {
+  @apply text-[1.08em] leading-relaxed;
+}
+/* Drop cap on the opening paragraph (tablet and up only; skipped if it opens with code). */
+@media (min-width: 48rem) {
+  .prose > p:first-child:not(:has(> code:first-child))::first-letter {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 3.4em;
+    line-height: 0.82;
+    float: left;
+    margin: 0.08em 0.14em 0 0;
+    color: var(--doc-accent, var(--primary));
+  }
+}
+.prose strong {
+  @apply font-semibold text-foreground;
+}
+.prose em {
+  font-style: italic;
 }
 .prose a:not(.heading-anchor) {
-  @apply font-medium text-primary underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-primary;
+  @apply font-medium text-foreground underline underline-offset-[0.2em] transition-colors;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--doc-accent-line, var(--ring));
+}
+.prose a:not(.heading-anchor):hover {
+  color: var(--doc-accent, var(--primary));
+  text-decoration-color: var(--doc-accent-strong, var(--primary));
 }
 .prose .heading-anchor {
-  @apply no-underline text-inherit;
+  @apply text-inherit no-underline;
 }
 .prose .heading-anchor:hover::after {
   content: " #";
   @apply text-muted-foreground;
 }
+.prose ul,
+.prose ol {
+  @apply my-5 pl-6;
+}
 .prose ul {
-  @apply my-4 ml-6 list-disc [&>li]:mt-2;
+  @apply list-disc;
 }
 .prose ol {
-  @apply my-4 ml-6 list-decimal [&>li]:mt-2;
+  @apply list-decimal;
+}
+.prose li {
+  @apply my-2 pl-1;
+}
+.prose li::marker {
+  color: var(--doc-accent-strong, var(--muted-foreground));
+  font-weight: 600;
 }
 .prose li > ul,
 .prose li > ol {
-  @apply my-1;
+  @apply my-1.5;
 }
+.prose li > p {
+  @apply my-2;
+}
+.prose ul.contains-task-list,
+.prose ul:has(> li > input[type="checkbox"]) {
+  @apply list-none pl-1;
+}
+.prose input[type="checkbox"] {
+  @apply mr-2 align-middle;
+  accent-color: var(--doc-accent-strong, var(--primary));
+}
+/* Pull-quote style blockquote */
 .prose blockquote {
-  @apply my-6 border-l-2 pl-6 italic text-muted-foreground;
+  @apply relative my-9 border-0 px-6 py-1 text-foreground/90 md:px-10;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1.18em;
+  line-height: 1.55;
+  font-style: italic;
 }
+.prose blockquote::before {
+  content: "\201C";
+  @apply pointer-events-none absolute -top-3 left-0 select-none font-serif leading-none;
+  font-size: 3.5em;
+  color: var(--doc-accent-strong, var(--muted-foreground));
+  opacity: 0.6;
+}
+.prose blockquote p {
+  @apply my-3;
+}
+.prose blockquote p:last-child {
+  @apply mb-0;
+}
+.prose blockquote cite,
+.prose blockquote footer {
+  @apply mt-2 block text-[0.78em] not-italic tracking-wide text-muted-foreground;
+}
+/* Ornamental rule */
 .prose hr {
+  @apply my-12 h-auto border-0 text-center;
+}
+.prose hr::before {
+  content: "*  *  *";
+  @apply font-serif text-lg tracking-[0.6em] text-muted-foreground;
+  padding-left: 0.6em;
+}
+/* Media */
+.prose img,
+.prose video {
+  @apply my-8 h-auto max-w-full rounded-xl border bg-card shadow-lg shadow-black/5;
+}
+.prose p > img:only-child {
+  @apply mx-auto block;
+}
+.prose figure {
   @apply my-8;
 }
-.prose img {
-  @apply my-6 rounded-lg border;
+.prose figure > img,
+.prose figure > video {
+  @apply my-0;
 }
+.prose figcaption,
+.prose p > img:only-child + em,
+.prose img + em:last-child {
+  @apply mt-3 block text-center text-sm italic text-muted-foreground;
+}
+/* Tables */
 .prose table {
-  @apply my-6 w-full overflow-hidden rounded-lg border text-sm;
+  @apply my-8 w-full border-collapse overflow-hidden rounded-lg border text-[0.92em] leading-normal;
+}
+@media (max-width: 40rem) {
+  .prose table {
+    @apply block overflow-x-auto whitespace-nowrap;
+  }
 }
 .prose thead {
-  @apply bg-muted;
+  @apply bg-muted/80;
 }
 .prose th {
-  @apply border px-4 py-2 text-left font-semibold;
+  @apply border-b-2 px-4 py-2.5 text-left text-[0.82em] font-semibold uppercase tracking-wide text-muted-foreground;
+  border-bottom-color: var(--doc-accent-line, var(--border));
 }
 .prose td {
-  @apply border px-4 py-2;
+  @apply border-b px-4 py-2.5 align-top;
 }
-.prose tr:nth-child(even) {
+.prose tbody tr:nth-child(even) {
   @apply bg-muted/40;
 }
+.prose tbody tr:last-child td {
+  @apply border-b-0;
+}
+/* Keys & code */
 .prose kbd {
-  @apply rounded border bg-muted px-1.5 py-0.5 font-mono text-xs;
+  @apply inline-block rounded-md border border-b-2 bg-muted px-1.5 py-0.5 align-middle font-mono text-[0.78em] font-medium leading-none text-foreground shadow-xs;
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 .prose :not(pre) > code {
-  @apply rounded bg-muted px-[0.35rem] py-[0.2rem] font-mono text-[0.85em] font-medium;
+  @apply rounded-md border border-border/60 bg-muted/70 px-[0.35em] py-[0.12em] text-[0.86em] font-medium text-foreground;
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.prose a > code {
+  @apply underline decoration-inherit;
 }
 .prose pre {
-  @apply my-6 overflow-x-auto rounded-lg border bg-card p-4 text-sm leading-6;
+  @apply my-8 overflow-x-auto rounded-xl border bg-card px-5 py-4 text-[13.5px] leading-[1.7];
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  scrollbar-width: thin;
 }
 .prose pre code {
-  @apply bg-transparent p-0 font-mono text-[13px];
+  @apply bg-transparent p-0 text-inherit;
+  font-family: inherit;
+  font-size: inherit;
+  border: 0;
 }
 
-/* Shiki dual theme */
-html:not(.dark) .astro-code,
+/* Shiki dual theme: colour per token, background only on the <pre> itself. */
 html:not(.dark) .astro-code span {
   color: var(--shiki-light) !important;
-  background-color: var(--shiki-light-bg) !important;
 }
-.dark .astro-code,
 .dark .astro-code span {
   color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+}
+.astro-code,
+.astro-code span {
+  background-color: transparent !important;
 }
 .prose pre.astro-code {
   background-color: var(--card) !important;
 }
 
-/* Code block wrapper + copy button (injected at runtime) */
+/* Code block wrapper. DocsLayout wraps each <pre> in .code-block at runtime and adds a
+   single language label in the corner; clicking the label copies the whole block. */
 .code-block {
-  @apply relative;
+  @apply relative my-8;
 }
-.code-block .copy-btn {
-  @apply absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md border bg-background/80 text-muted-foreground opacity-0 backdrop-blur transition hover:bg-accent hover:text-foreground;
+.code-block > pre {
+  @apply my-0;
 }
-.code-block:hover .copy-btn {
-  @apply opacity-100;
+.code-block .lang-btn {
+  @apply absolute right-2.5 top-2.5 z-10 inline-flex h-6 items-center gap-1 rounded-md border bg-background/80 px-2 font-mono text-[10px] font-medium uppercase tracking-wider text-muted-foreground backdrop-blur transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+}
+.code-block .lang-btn[data-copied="true"] {
+  color: var(--doc-accent, var(--primary));
+  border-color: var(--doc-accent-line, var(--border));
 }
 
 /* Steps (step counter) — usable from plain markdown via a wrapper div */
 .steps {
-  @apply relative my-6 ml-4 border-l pl-8;
+  @apply relative my-8 ml-4 pl-8;
   counter-reset: step;
+  border-left: 2px solid var(--doc-accent-soft, var(--border));
 }
 .steps > h3,
 .steps > .step {
@@ -232,11 +429,17 @@ html:not(.dark) .astro-code span {
 .steps > h3::before,
 .steps > .step::before {
   content: counter(step);
-  @apply absolute -left-[calc(2rem+1px+1rem)] top-0 flex h-8 w-8 items-center justify-center rounded-full border bg-background font-mono text-sm font-medium text-foreground;
+  @apply absolute -left-[calc(2rem+1px+1rem)] top-0 flex h-8 w-8 items-center justify-center rounded-full border font-mono text-sm font-semibold;
   margin-top: -0.25rem;
+  background: var(--doc-accent-soft, var(--background));
+  border-color: var(--doc-accent-line, var(--border));
+  color: var(--doc-accent, var(--foreground));
 }
 .steps > h3 {
   @apply mb-0 border-0 pb-0;
+}
+.steps > h3::after {
+  content: none;
 }
 
 /* Sidebar scrollbars */

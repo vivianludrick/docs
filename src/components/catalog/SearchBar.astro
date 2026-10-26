@@ -1,0 +1,35 @@
+---
+/** Fake search input that opens the global ⌘K palette (the Search island listens on window). */
+import { Search } from "lucide-svelte";
+import { cn } from "../../lib/utils";
+
+interface Props {
+  class?: string;
+  placeholder?: string;
+}
+const { class: className, placeholder = "Search articles, playlists, tags…" } = Astro.props;
+---
+
+<button
+  type="button"
+  data-open-search
+  class={cn(
+    "flex w-full items-center gap-3 rounded-full border bg-card/90 px-5 py-3.5 text-left text-muted-foreground shadow-xl shadow-black/5 backdrop-blur transition hover:border-foreground/20 hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    className,
+  )}
+>
+  <Search class="h-5 w-5 shrink-0" />
+  <span class="flex-1 truncate text-sm md:text-base">{placeholder}</span>
+  <kbd
+    class="hidden shrink-0 rounded-md border bg-muted px-2 py-0.5 font-mono text-[11px] text-muted-foreground sm:inline-block"
+    >⌘K</kbd
+  >
+</button>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-open-search]").forEach((b) =>
+    b.addEventListener("click", () =>
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })),
+    ),
+  );
+</script>

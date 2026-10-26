@@ -46,14 +46,44 @@ export const THEMES: { id: ThemeId; label: string }[] = [
 ];
 
 export const PROVIDERS: { id: Provider; label: string; models: string[]; keyHint: string }[] = [
-  { id: "google", label: "Google Gemini", models: ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"], keyHint: "AIza…" },
-  { id: "openai", label: "OpenAI", models: ["gpt-4.1-mini", "gpt-4.1", "gpt-4o-mini", "o4-mini"], keyHint: "sk-…" },
-  { id: "anthropic", label: "Anthropic", models: ["claude-sonnet-5-5", "claude-haiku-4-5-20251001", "claude-opus-5-5"], keyHint: "sk-ant-…" },
-  { id: "openrouter", label: "OpenRouter", models: ["google/gemini-2.5-flash", "openai/gpt-4.1-mini", "anthropic/claude-sonnet-4.5"], keyHint: "sk-or-…" },
+  {
+    id: "google",
+    label: "Google Gemini",
+    models: [
+      "gemini-2.5-flash",
+      "gemini-flash-latest",
+      "gemini-3.1-pro-preview",
+      "gemini-pro-latest",
+    ],
+    keyHint: "AIza…",
+  },
+  {
+    id: "openai",
+    label: "OpenAI",
+    models: ["gpt-4.1-mini", "gpt-4.1", "gpt-4o-mini", "o4-mini"],
+    keyHint: "sk-…",
+  },
+  {
+    id: "anthropic",
+    label: "Anthropic",
+    models: ["claude-sonnet-5-5", "claude-haiku-4-5-20251001", "claude-opus-5-5"],
+    keyHint: "sk-ant-…",
+  },
+  {
+    id: "openrouter",
+    label: "OpenRouter",
+    models: ["google/gemini-2.5-flash", "openai/gpt-4.1-mini", "anthropic/claude-sonnet-4.5"],
+    keyHint: "sk-or-…",
+  },
 ];
 
 const defaultPrefs: Prefs = { theme: "default", mode: "auto", font: "sans" };
-const defaultAi: AiSettings = { provider: "google", model: "gemini-2.5-flash", apiKey: "", persist: false };
+const defaultAi: AiSettings = {
+  provider: "google",
+  model: "gemini-2.5-flash",
+  apiKey: "",
+  persist: false,
+};
 
 function read<T>(storage: Storage | undefined, key: string): Partial<T> | null {
   try {
@@ -75,7 +105,10 @@ export function loadSettings() {
   Object.assign(prefs, read<Prefs>(localStorage, PREFS_KEY) ?? {});
   const persisted = read<AiSettings>(localStorage, AI_KEY);
   const session = read<AiSettings>(sessionStorage, AI_KEY);
-  Object.assign(ai, persisted ? { ...persisted, persist: true } : session ? { ...session, persist: false } : {});
+  Object.assign(
+    ai,
+    persisted ? { ...persisted, persist: true } : session ? { ...session, persist: false } : {},
+  );
   applyTheme();
 }
 

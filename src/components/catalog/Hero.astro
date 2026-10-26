@@ -1,0 +1,58 @@
+---
+/**
+ * Full-width hero. One slide renders statically; several become an
+ * auto-rotating Svelte carousel.
+ */
+import { ListVideo, FileText, ArrowRight } from "lucide-svelte";
+import BookmarkButton from "../BookmarkButton.svelte";
+import TagChips from "./TagChips.svelte";
+import type { HeroSlide } from "./hero";
+import HeroCarousel from "./HeroCarousel.svelte";
+
+interface Props {
+  slides: HeroSlide[];
+  cta?: string;
+}
+const { slides, cta = "Start reading" } = Astro.props;
+const s = slides[0];
+---
+
+{slides.length > 1 ? (
+  <HeroCarousel client:load {slides} {cta} />
+) : s ? (
+  <section class="relative flex min-h-[70vh] items-end overflow-hidden" style={`--hue: ${s.hue}`}>
+    <img src={s.banner} alt="" class="absolute inset-0 h-full w-full object-cover" fetchpriority="high" />
+    <div class="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-background/10"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent"></div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -bottom-24 left-1/4 h-72 w-[40rem] -translate-x-1/2 rounded-full blur-3xl"
+      style={`background: hsl(${s.hue} 70% 55% / 0.22)`}
+    ></div>
+
+    <div class="relative mx-auto w-full max-w-screen-2xl px-4 pb-16 pt-36 md:px-8 md:pb-20">
+      <div class="max-w-2xl">
+        <div class="flex items-center gap-2 text-xs font-medium">
+          <span
+            class="inline-flex shrink-0 items-center gap-1.5 rounded-full border bg-background/70 px-2.5 py-1 backdrop-blur"
+          >
+            {s.kind === "playlist" ? <ListVideo class="h-3.5 w-3.5" /> : <FileText class="h-3.5 w-3.5" />}
+            {s.meta}
+          </span>
+          <TagChips client:load tags={s.tags} />
+        </div>
+        <h1 class="mt-4 text-5xl font-extrabold leading-[1.05] tracking-tight md:text-6xl">{s.title}</h1>
+        {s.description && <p class="mt-4 max-w-xl text-base text-muted-foreground md:text-lg">{s.description}</p>}
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a
+            href={s.href}
+            class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition hover:opacity-90 hover:shadow-[0_12px_32px_-8px_hsl(var(--hue)_70%_50%/0.6)]"
+          >
+            {cta} <ArrowRight class="h-4 w-4" />
+          </a>
+          <BookmarkButton client:load href={s.key} title={s.title} variant="pill" />
+        </div>
+      </div>
+    </div>
+  </section>
+) : null}

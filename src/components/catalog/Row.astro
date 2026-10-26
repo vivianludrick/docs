@@ -1,0 +1,89 @@
+---
+/**
+ * Horizontal scroll-snap rail of cards with desktop arrow buttons.
+ * Renders nothing when there are no items.
+ */
+import type { CatalogItem } from "../../lib/nav";
+import { withBase, cn } from "../../lib/utils";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-svelte";
+import Card from "./Card.astro";
+
+interface Props {
+  title: string;
+  items: CatalogItem[];
+  /** "See all" destination (without base). */
+  href?: string;
+  /** Per-card width classes. */
+  cardClass?: string;
+  id?: string;
+}
+const { title, items, href, cardClass = "w-[70vw] sm:w-[280px]", id } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="group/row" data-row {id}>
+    <div class="mx-auto flex max-w-screen-2xl items-baseline justify-between px-4 md:px-8">
+      <h2 class="text-lg font-bold tracking-tight md:text-xl">{title}</h2>
+      {href && (
+        <a
+          href={withBase(href)}
+          class="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+        >
+          See all <ArrowRight class="h-3.5 w-3.5" />
+        </a>
+      )}
+    </div>
+
+    <div class="relative">
+      <div
+        data-rail
+        class="mx-auto flex max-w-screen-2xl snap-x snap-mandatory gap-3 overflow-x-auto scroll-pl-4 px-4 pb-10 pt-4 [scrollbar-width:none] md:scroll-pl-8 md:gap-4 md:px-8 [&::-webkit-scrollbar]:hidden"
+        style="-webkit-overflow-scrolling: touch"
+      >
+        {items.map((item) => (
+          <div class={cn("relative shrink-0 snap-start hover:z-10", cardClass)}>
+            <Card {item} />
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        data-prev
+        aria-label="Scroll left"
+        class="absolute left-2 top-[calc(50%-1rem)] hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 opacity-0 shadow-lg backdrop-blur transition hover:bg-accent group-hover/row:opacity-100 disabled:pointer-events-none disabled:opacity-0 md:flex"
+      >
+        <ChevronLeft class="h-5 w-5" />
+      </button>
+      <button
+        type="button"
+        data-next
+        aria-label="Scroll right"
+        class="absolute right-2 top-[calc(50%-1rem)] hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-background/90 opacity-0 shadow-lg backdrop-blur transition hover:bg-accent group-hover/row:opacity-100 disabled:pointer-events-none disabled:opacity-0 md:flex"
+      >
+        <ChevronRight class="h-5 w-5" />
+      </button>
+    </div>
+  </section>
+)}
+
+<script>
+  function init(row: HTMLElement) {
+    const rail = row.querySelector<HTMLElement>("[data-rail]");
+    const prev = row.querySelector<HTMLButtonElement>("[data-prev]");
+    const next = row.querySelector<HTMLButtonElement>("[data-next]");
+    if (!rail || !prev || !next) return;
+
+    const update = () => {
+      prev.disabled = rail.scrollLeft <= 4;
+      next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+    };
+    const step = () => Math.max(rail.clientWidth * 0.8, 200);
+    prev.addEventListener("click", () => rail.scrollBy({ left: -step(), behavior: "smooth" }));
+    next.addEventListener("click", () => rail.scrollBy({ left: step(), behavior: "smooth" }));
+    rail.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+  document.querySelectorAll<HTMLElement>("[data-row]").forEach(init);
+</script>
